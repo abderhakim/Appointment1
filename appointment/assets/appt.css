@@ -1,0 +1,113 @@
+
+
+body{
+    font-family: Arial, "san-serif", Helvatica;
+    background-image: url('background.png');
+}
+h2{
+    text-align: center;
+    color: midnightblue;
+    display: block;
+    padding-top: 20px;
+    font-size: 2em;
+    -webkit-margin-before: 5px;
+    -webkit-margin-after: 5px;
+    -webkit-margin-start: 0px;
+    -webkit-margin-end: 0px;
+    font-weight: bold;
+    margin-top: 0;
+}
+label{
+    color: midnightblue;
+    font-weight: bold;
+    font-size: 1.5em;
+
+}
+input[type="text"]{
+    line-height: 32px;
+    font-size: 16pt;
+    padding: 0 10px;
+    width: 60%;
+    margin: 10px 0px 10px 10px;
+    color: midnightblue;
+}
+
+#content{
+    width: 80%;
+}
+
+#btnLookup{
+    border: 1px solid #4285F4;
+    color: #FFF;
+    outline: medium none;
+    display: inline-block;
+    line-height: 35px;
+    padding: 0px 10px;
+    border-radius: 2px;
+    background-color: #4387FD;
+    cursor: pointer;
+    width: 120px;
+    font-size: 20px;
+}
+#btnLookup:hover{
+    background: #4680AA;
+}
+.centering{
+    margin: 0 auto;
+}
+
+#search{
+    text-align: center;
+    background-color: #D2D2D2;
+    padding: 0px 0 20px 0;
+    border-radius: 20px 20px 0 0;
+}
+#result{
+    background-color: #e0dafc;
+    color:#2F2D79;
+    height: 400px;
+    overflow: auto;
+    padding: 50px;
+}
+#result div{
+    line-height: 1.5em;
+}
+#iconImage{
+    float: left;
+    width: 130px;
+    height: 130px;
+}
+.validatorTool {
+    float: right;
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    opacity: 0.5;
+}
+.word{
+    font-size: 16px;
+    font-weight: bold;
+}
+.wordType{
+    color:red;
+}
+.definition{
+    font-size: 14px;
+}
+.definition, .wordType, .word{
+    padding: 5px;
+}
+
+#loading {
+    text-align: center;
+    position: fixed;
+    top: 150px;
+    left: 600px;
+}
+
+.notFound{
+    color: red;
+    font-size: 22px;
+    font-weight: bold;
+    text-align: center;
+}

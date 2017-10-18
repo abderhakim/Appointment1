@@ -1,0 +1,178 @@
+
+
+1)install all the sqllite , apache http webserver,Activeperl,
+
+
+=============================================
+
+
+2)Create the appointment table with the SQLlite fill it with some test data.
+CREATE TABLE `appointment` (
+	`Id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+	`appointmentTime`	TEXT,
+	`description`	TEXT
+);
+
+INSERT INTO appointment (appointmentTime,description)
+VALUES
+ ("mon april 2017","abdominal ultra sound checkup");
+
+select * from appointment
+
+==============================================
+
+3) design the front page index.html
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Online Appointment</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="assets/appt.css" type="text/css" rel="stylesheet"/>
+        <script type="text/javascript" src="assets/jquery-1.12.1.min.js"></script>
+        <script type="text/javascript" src="assets/appt.js"></script>
+    </head>
+    <body>
+        <div id="content" class="centering">
+            <div id="search" class="centering">
+               
+                <h2>Online Appointment</h2>
+				 <label>Add Appointment:</label>
+				 <br>
+                 <button id="NEW">NEW</button>
+                 <br>
+                <label>SearchAppt:</label>
+                <input type="text" id="SearchAppt" name="SearchAppt" placeholder="search for an appointment"/>
+                <button id="btnsearch">SEARCH</button>
+            </div>
+            <div id="loading">
+                <img src="assets/loader.gif" alt="loader">
+            </div>
+            <div id="result">
+
+            </div>
+        </div>
+        
+    </body>
+</html>
+==========================================================
+
+4)the Java script code for displaying and adding Appointments 
+
+'use strict';
+
+$(document).ready(function () {
+    $(function () {
+        $('#loading').hide();
+        $(document).ajaxStart(function () {
+            $('#loading').show();
+        }).ajaxStop(function () {
+            $('#loading').hide();
+        });
+    });
+
+   
+    
+    //Trigger user press enter key
+    $('#SearchAppt').keypress(function (event) {
+        var keycode = (event.keyCode ? event.keyCode : event.which);
+        if (keycode == '13') {
+            requestData();
+        }
+    });
+    //Show result when user click Search button
+    $("#btnsearch").click(requestData);
+
+
+    function requestData() {
+        var SearchAppt = $("#SearchAppt").val();
+        var requestURL = "http://localhost:8080/OnlineAppointment/ApptServlet";
+        if (SearchAppt !== '') {
+            $.post(requestURL, {"SearchAppt": SearchAppt}).done(getAppointmentData).error(onRequestError);
+
+        }
+    }
+
+    function getAppointmentData(data) {
+        var result = JSON.parse(data);
+        result = result.AppointmentData;
+        var searchResult = '';
+        $.each(result, function (index, value) {
+            searchResult += "<dl>";
+            searchResult += "<dt class='Id'>";
+            searchResult += value.Id;
+            searchResult += "<span class='appointmentTime'>(" + value.appointmentTime + ")</span></dt>";
+            searchResult += "<span class='appointmentDate'>(" + value.appointmentTime + ")</span></dt>";
+            searchResult += "<dd class='description'>" + value.description + "</dd>";
+            searchResult += "</dl>";
+        });
+        if (searchResult !== '') {
+            $("#result").html(searchResult);
+        } else {
+            $("#result").html("<div class='notFound'>Search not found!</div>");
+        }
+
+    }
+
+
+
+    function onRequestError(xhr, status, exceptio) {
+        console.log(xhr, status, exception);
+    }
+});
+
+
+=============================================================================
+
+5)using perl for conecting to sqlite and acessing the Data
+
+#!/usr/bin/perl -T
+use CGI;
+use DBI;
+use strict;
+use warnings;
+ 
+# read the CGI params
+my $cgi = CGI->new;
+my $Appointmentid = $cgi->param("SearchAppt");
+
+    my $html_table = $cgi->param("html_table_Appointment");
+    my ($base_dn, $tblname);
+  
+    #LDAP Connection parameters
+    if ($Appointmentid eq "Disabled Users") {
+        $base_dn = "";
+        $tblname = "disabled_user";
+    } elsif ($Appointmentid eq "") {
+        $base_dn = "";
+        $tblname = "service_account";
+    } elsif ($Appointmentid eq "") {
+        $base_dn = "";
+        $tblname = "";
+    } else {
+        die;
+    }
+
+   # connect to the database
+    my ($platform,$database,$host,$port,$db_user,$pw) = ("SQLlite","Appointment","localhost","3306","root","62321314");
+    my $dsn = "DBI:$platform:database=$database,host=$host,port=$port";
+    my $connect = DBI->connect("DBI:mysql:database=$database;host=$host",$db_user,$pw,{RaiseError => 1});
+
+
+# check the Appointment id  in the database
+my $statement = qq{SELECT id FROM Appointments WHERE Appointmentid=?};
+my $sth = $dbh->prepare($statement)
+  or die $dbh->errstr;
+$sth->execute($Appointmentid)
+  or die $sth->errstr;
+my ($AppointmentID) = $sth->fetchrow_array;
+ 
+# create a JSON string according to the database result
+my $json = ($AppointmentID) ? 
+
+ 
+# return JSON string
+print $cgi->header(-type => "application/json", -charset => "utf-8");
+print $json;
+
+
